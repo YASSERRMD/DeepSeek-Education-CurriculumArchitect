@@ -26,7 +26,7 @@ class TrainingConfig:
     n_layer: int = 6
     n_head: int = 8
     n_embd: int = 512
-    block_size: int = 1024
+    block_size: int = 2048
     dropout: float = 0.1
     bias: bool = True
     
@@ -66,13 +66,13 @@ class TrainingConfig:
     compile_model: bool = True
     
     # Data configuration
-    dataset_name: str = "ajibawa-2023/Children-Stories-Collection"
+    dataset_name: str = "ajibawa-2023/Education-Researchers"
     data_dir: str = 'src/data'
 
 
 def setup_environment():
     """Setup the training environment"""
-    print("Setting up DeepSeek Children's Stories training environment...")
+    print("Setting up DeepSeek Educational Curriculam training environment...")
     
     # Check CUDA availability
     if torch.cuda.is_available():
@@ -214,7 +214,7 @@ def train_model(model: DeepSeek, config: TrainingConfig):
 
 def main():
     """Main training function"""
-    parser = argparse.ArgumentParser(description='Train DeepSeek model on children\'s stories')
+    parser = argparse.ArgumentParser(description='Train DeepSeek model on Educational Curriculum')
     
     # Model configuration
     parser.add_argument('--n-layer', type=int, default=6, help='Number of layers')
@@ -265,7 +265,7 @@ def main():
         use_mixed_precision=not args.no_mixed_precision
     )
     
-    print("DeepSeek Children's Stories Training")
+    print("DeepSeek Educational Curriculum Training")
     print("=" * 50)
     print(f"Configuration:")
     print(f"  - Model: {config.n_layer}L/{config.n_head}H/{config.n_embd}D")
