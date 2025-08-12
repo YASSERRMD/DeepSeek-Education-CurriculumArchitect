@@ -104,7 +104,7 @@ class DeepSeekDataProcessor:
         """Prepare the Curriculum Collection dataset for DeepSeek training"""
         # Load the Children Stories Collection dataset
         print("Loading Children Stories Collection dataset...")
-        ds = load_dataset("ajibawa-2023/Children-Stories-Collection")
+        ds = load_dataset("ajibawa-2023/Education-Researchers")
         
         train_bin_path = os.path.join(self.data_dir, "train.bin")
         val_bin_path = os.path.join(self.data_dir, "validation.bin")
