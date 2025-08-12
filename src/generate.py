@@ -1,6 +1,6 @@
 """
-DeepSeek Children's Stories Text Generation
-Generate children's stories using the trained DeepSeek model
+DeepSeek Educational Curriculum Text Generation
+Generate Educational Curriculum using the trained DeepSeek model
 """
 
 import os
@@ -18,23 +18,19 @@ from model.deepseek import DeepSeek, DeepSeekConfig
 # Allowlist DeepSeekConfig for safe deserialization
 torch.serialization.add_safe_globals([DeepSeekConfig])
 
-class DeepSeekStoryGenerator:
+class DeepSeekCurriculumGenerator:
     def __init__(self, model_path: str, device: str = 'auto'):
-        """Initialize the story generator"""
+        """Initialize the curriculum generator"""
         self.device = self._get_device(device)
         self.model = self._load_model(model_path)
         self.tokenizer = tiktoken.get_encoding("gpt2")
         
-        # Special tokens for story structure
+        # Special tokens for curriculum structure
         self.special_tokens = {
-            "story_start": "<|story|>",
-            "story_end": "</|story|>",
+            "curriculum_start": "<|curriculum|>",
+            "curriculum_end": "</|curriculum|>",
             "prompt_start": "<|prompt|>",
             "prompt_end": "</|prompt|>",
-            "moral_start": "<|moral|>",
-            "moral_end": "</|moral|>",
-            "character_start": "<|character|>",
-            "character_end": "</|character|>"
         }
     
     def _get_device(self, device: str) -> str:
@@ -78,17 +74,17 @@ class DeepSeekStoryGenerator:
         if character:
             full_prompt += f" {self.special_tokens['character_start']} {character.lower()} {self.special_tokens['character_end']}"
         
-        full_prompt += f" {self.special_tokens['story_start']}"
+        full_prompt += f" {self.special_tokens['curriculum_start']}"
         
         # Tokenize
         token_ids = self.tokenizer.encode_ordinary(full_prompt)
         return torch.tensor([token_ids], dtype=torch.long, device=self.device)
     
-    def generate_story(self, prompt: str, character: Optional[str] = None, 
+    def generate_curriculum(self, prompt: str, character: Optional[str] = None, 
                       max_tokens: int = 200, temperature: float = 0.8, 
                       top_k: int = 40, top_p: float = 0.9) -> str:
-        """Generate a children's story"""
-        print(f"Generating story for prompt: '{prompt}'")
+        """Generate a Educational Curriculum"""
+        print(f"Generating Educational Curriculum for prompt: '{prompt}'")
         if character:
             print(f"Character: {character}")
         
@@ -107,21 +103,21 @@ class DeepSeekStoryGenerator:
         # Decode the generated text
         generated_text = self.tokenizer.decode(generated_ids[0].tolist())
         
-        # Extract the story part
-        story = self._extract_story(generated_text)
+        # Extract the curriculum part
+        curriculum = self._extract_curriculum(generated_text)
         
-        return story
+        return curriculum
     
-    def _extract_story(self, text: str) -> str:
-        """Extract the story from the generated text"""
-        # Find story start and end markers
-        story_start = text.find(self.special_tokens['story_start'])
-        story_end = text.find(self.special_tokens['story_end'])
+    def _extract_curriculum(self, text: str) -> str:
+        """Extract the curriculum from the generated text"""
+        # Find curriculum start and end markers
+        curriculum_start = text.find(self.special_tokens['curriculum_start'])
+        curriculum_end = text.find(self.special_tokens['curriculum_end'])
         
-        if story_start != -1 and story_end != -1:
-            # Extract story content
-            story_content = text[story_start + len(self.special_tokens['story_start']):story_end].strip()
-            return story_content
+        if curriculum_start != -1 and curriculum_end != -1:
+            # Extract curriculum content
+            curriculum_content = text[curriculum_start + len(self.special_tokens['curriculum_start']):curriculum_end].strip()
+            return curriculum_content
         else:
             # Fallback: return the text after the last prompt
             prompt_end = text.find(self.special_tokens['prompt_end'])
@@ -136,14 +132,14 @@ class DeepSeekStoryGenerator:
         stories = []
         
         for i, prompt in enumerate(prompts):
-            print(f"\nGenerating story {i+1}/{len(prompts)}...")
-            story = self.generate_story(prompt, **kwargs)
-            stories.append(story)
+            print(f"\nGenerating curriculum {i+1}/{len(prompts)}...")
+            curriculum = self.generate_curriculum(prompt, **kwargs)
+            stories.append(curriculum)
         
         return stories
     
     def interactive_generation(self):
-        """Interactive story generation mode"""
+        """Interactive curriculum generation mode"""
         print("DeepSeek Children's Stories - Interactive Mode")
         print("Type 'quit' to exit")
         print("-" * 50)
@@ -151,7 +147,7 @@ class DeepSeekStoryGenerator:
         while True:
             try:
                 # Get prompt from user
-                prompt = input("\nEnter a story prompt: ").strip()
+                prompt = input("\nEnter a curriculum prompt: ").strip()
                 
                 if prompt.lower() in ['quit', 'exit', 'q']:
                     print("Goodbye!")
@@ -174,31 +170,31 @@ class DeepSeekStoryGenerator:
                     max_tokens = 200
                     temperature = 0.8
                 
-                # Generate story
-                story = self.generate_story(
+                # Generate curriculum
+                curriculum = self.generate_curriculum(
                     prompt, 
                     character=character,
                     max_tokens=max_tokens,
                     temperature=temperature
                 )
                 
-                # Display story
+                # Display curriculum
                 print("\n" + "="*50)
-                print("GENERATED STORY:")
+                print("GENERATED curriculum:")
                 print("="*50)
-                print(story)
+                print(curriculum)
                 print("="*50)
                 
             except KeyboardInterrupt:
                 print("\nGoodbye!")
                 break
             except Exception as e:
-                print(f"Error generating story: {e}")
+                print(f"Error generating curriculum: {e}")
 
 
 def main():
     """Main generation function"""
-    parser = argparse.ArgumentParser(description='Generate children\'s stories with DeepSeek')
+    parser = argparse.ArgumentParser(description='Generate Educational Curriculum with DeepSeek')
     
     # Model configuration
     parser.add_argument('--model-path', type=str, default='checkpoints/best_model.pt',
@@ -207,7 +203,7 @@ def main():
                        help='Device to use (auto, cuda, cpu)')
     
     # Generation parameters
-    parser.add_argument('--prompt', type=str, help='Story prompt')
+    parser.add_argument('--prompt', type=str, help='Curriculum prompt')
     parser.add_argument('--character', type=str, help='Character name')
     parser.add_argument('--max-tokens', type=int, default=200, help='Maximum tokens to generate')
     parser.add_argument('--temperature', type=float, default=0.8, help='Sampling temperature')
@@ -227,7 +223,7 @@ def main():
         return
     
     # Create generator
-    generator = DeepSeekStoryGenerator(args.model_path, args.device)
+    generator = DeepSeekCurriculumGenerator(args.model_path, args.device)
     
     if args.interactive:
         # Interactive mode
@@ -236,8 +232,8 @@ def main():
         # Single or multiple generation
         if args.prompt:
             if args.num_stories == 1:
-                # Single story
-                story = generator.generate_story(
+                # Single curriculum
+                curriculum = generator.generate_curriculum(
                     args.prompt,
                     character=args.character,
                     max_tokens=args.max_tokens,
@@ -250,9 +246,9 @@ def main():
                 if args.character:
                     print(f"Character: {args.character}")
                 print("\n" + "="*50)
-                print("GENERATED STORY:")
+                print("GENERATED curriculum:")
                 print("="*50)
-                print(story)
+                print(curriculum)
                 print("="*50)
             else:
                 # Multiple stories
@@ -267,14 +263,14 @@ def main():
                     top_p=args.top_p
                 )
                 
-                for i, story in enumerate(stories):
-                    print(f"\nStory {i+1}:")
+                for i, curriculum in enumerate(stories):
+                    print(f"\ncurriculum {i+1}:")
                     print("="*50)
-                    print(story)
+                    print(curriculum)
                     print("="*50)
         else:
             print("Please provide a prompt or use --interactive mode.")
-            print("Example: python generate.py --prompt 'A brave little mouse' --character 'Mickey'")
+            print("Example: python generate.py --prompt 'A brave little mouse'")
 
 
 if __name__ == "__main__":
