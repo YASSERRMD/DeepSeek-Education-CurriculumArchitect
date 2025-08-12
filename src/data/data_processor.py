@@ -52,7 +52,7 @@ class DeepSeekDataProcessor:
         text = " ".join(text.split())
         return text
 
-    def extract_story_elements(self, example: Dict) -> Dict:
+    def extract_curriculum_elements(self, example: Dict) -> Dict:
         prompt = self.preprocess_text(example.get("prompt", ""))
         curriculum = self.preprocess_text(example.get("text", ""))
         return {"prompt": prompt, "curriculum": curriculum}
@@ -76,7 +76,7 @@ class DeepSeekDataProcessor:
     # ------------ map/process per example ------------ #
 
     def process(self, example: Dict) -> Dict:
-        el = self.extract_story_elements(example)
+        el = self.extract_curriculum_elements(example)
 
         if not el["curriculum"] or not el["prompt"]:
             return {"ids": [], "len": 0}
