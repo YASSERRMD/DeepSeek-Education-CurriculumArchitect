@@ -1,5 +1,5 @@
 """
-DeepSeek Model Architecture for Children's Stories
+DeepSeek Model Architecture for Educational Curriculum
 Implements advanced features:
 - Multihead Latent Attention (MLA)
 - Mixture of Experts (MoE)
@@ -24,7 +24,7 @@ class DeepSeekConfig:
     n_layer: int = 6         # Reduced for efficiency
     n_head: int = 8          # Number of attention heads
     n_embd: int = 512        # Embedding dimension
-    block_size: int = 1024   # Context window
+    block_size: int = 4096   # Context window
     dropout: float = 0.1     # Dropout rate
     bias: bool = True        # Use bias in linear layers
     
