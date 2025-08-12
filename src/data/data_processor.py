@@ -23,14 +23,10 @@ class DeepSeekDataProcessor:
         
         # Special tokens for story structure (optimized for children's stories)
         self.special_tokens = {
-            "story_start": "<|story|>",
-            "story_end": "</|story|>",
+            "curriculum_start": "<|curriculum|>",
+            "curriculum_end": "</|curriculum|>",
             "prompt_start": "<|prompt|>",
-            "prompt_end": "</|prompt|>",
-            "moral_start": "<|moral|>",
-            "moral_end": "</|moral|>",
-            "character_start": "<|character|>",
-            "character_end": "</|character|>"
+            "prompt_end": "</|prompt|>"
         }
         
         # Ensure data directory exists
@@ -39,7 +35,7 @@ class DeepSeekDataProcessor:
         print(f"Data directory: {self.data_dir}")
         
         # Configuration for processing
-        self.max_length = 1024  # DeepSeek context window
+        self.max_length = 2048  # DeepSeek context window
         self.min_length = 50    # Minimum story length
         
     def preprocess_text(self, text: str) -> str:
@@ -49,40 +45,19 @@ class DeepSeekDataProcessor:
         text = text.replace('\n', ' ')  # Replace newlines with spaces
         text = ' '.join(text.split())  # Normalize whitespace
         
-        # Remove any inappropriate content markers (basic filtering)
-        inappropriate_phrases = ['adult content', 'mature', 'explicit']
-        for phrase in inappropriate_phrases:
-            if phrase in text:
-                return ""
-        
-        # Ensure the text is child-friendly
-        if len(text) < self.min_length:
-            return ""
             
         return text
         
     def extract_story_elements(self, example: Dict) -> Dict:
         """Extract story elements for better structure"""
         prompt = self.preprocess_text(example.get('prompt', ''))
-        story = self.preprocess_text(example.get('text', ''))
+        curriculum = self.preprocess_text(example.get('text', ''))
         
-        # Extract potential moral or lesson
-        moral = ""
-        if 'moral' in example:
-            moral = self.preprocess_text(example['moral'])
-        elif 'lesson' in example:
-            moral = self.preprocess_text(example['lesson'])
         
-        # Extract main character if available
-        character = ""
-        if 'character' in example:
-            character = self.preprocess_text(example['character'])
-        
+       
         return {
             'prompt': prompt,
-            'story': story,
-            'moral': moral,
-            'character': character
+            'curriculum': curriculum
         }
         
     def process(self, example: Dict) -> Dict:
@@ -91,7 +66,7 @@ class DeepSeekDataProcessor:
         elements = self.extract_story_elements(example)
         
         # Skip if no valid content
-        if not elements['story'] or not elements['prompt']:
+        if not elements['curriculum'] or not elements['prompt']:
             return {'ids': [], 'len': 0}
         
         # Create structured text with special tokens
@@ -99,16 +74,12 @@ class DeepSeekDataProcessor:
             f"{self.special_tokens['prompt_start']} {elements['prompt']} {self.special_tokens['prompt_end']} "
         )
         
-        # Add character information if available
-        if elements['character']:
-            full_text += f"{self.special_tokens['character_start']} {elements['character']} {self.special_tokens['character_end']} "
         
-        # Add the main story
-        full_text += f"{self.special_tokens['story_start']} {elements['story']} {self.special_tokens['story_end']}"
         
-        # Add moral if available
-        if elements['moral']:
-            full_text += f" {self.special_tokens['moral_start']} {elements['moral']} {self.special_tokens['moral_end']}"
+        # Add the curriculum
+        full_text += f"{self.special_tokens['curriculum_start']} {elements['curriculum']} {self.special_tokens['curriculum_end']}"
+        
+       
         
         # Tokenize with error handling
         try:
@@ -130,7 +101,7 @@ class DeepSeekDataProcessor:
             return {'ids': [], 'len': 0}
         
     def prepare_dataset(self) -> Dict:
-        """Prepare the Children Stories Collection dataset for DeepSeek training"""
+        """Prepare the Curriculum Collection dataset for DeepSeek training"""
         # Load the Children Stories Collection dataset
         print("Loading Children Stories Collection dataset...")
         ds = load_dataset("ajibawa-2023/Children-Stories-Collection")
@@ -270,7 +241,7 @@ class DeepSeekDataProcessor:
 
 def main():
     """Main function to process the dataset"""
-    print("DeepSeek Children's Stories Data Processor")
+    print("DeepSeek Eduction Curriculum Data Processor")
     print("=" * 50)
     
     processor = DeepSeekDataProcessor()
