@@ -1,5 +1,5 @@
 """
-DeepSeek Children's Stories Training Script
+DeepSeek Educational Curriculum Training Script
 Main training script for the DeepSeek model on children's stories
 """
 
