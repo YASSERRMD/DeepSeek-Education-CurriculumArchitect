@@ -6,7 +6,7 @@ Implements advanced features:
 - Multi-token prediction
 - Quantization support
 - Rotary Positional Encodings (RoPE)
-- Optimized for children's story generation
+- Optimized for Curriculum generation
 """
 
 import math
@@ -362,7 +362,7 @@ class MultiTokenPredictor(nn.Module):
 
 
 class DeepSeek(nn.Module):
-    """DeepSeek model for children's story generation"""
+    """DeepSeek model for Curriculum generation"""
 
     def __init__(self, config: DeepSeekConfig):
         super().__init__()
