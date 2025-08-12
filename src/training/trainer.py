@@ -1,5 +1,5 @@
 """
-DeepSeek Trainer for Children's Stories
+DeepSeek Trainer for Educational Curriculum
 Advanced training with MLA, MoE, and multi-token prediction
 """
 
